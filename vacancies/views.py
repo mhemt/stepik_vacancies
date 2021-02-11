@@ -1,45 +1,47 @@
 from django.http import HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render
-from django.views.generic import DetailView, ListView
+from django.views.generic import View
 
 from vacancies.models import Specialty, Skill, Vacancy
 from companies.models import Company
 
 
-class ListVacanciesView(ListView):
-    model = Vacancy
-    context_object_name = 'vacancies'
-    template_name = 'vacancies/vacancies.html'
+class VacanciesView(View):
+    def get(self, request, category=None):
+        vacancies = Vacancy.objects.all()
+        category_name = None
 
-    # def get_queryset(self):
-    #     print(123124124, self.args)
-    #     if self.args and self.args[0] == 'fluffy':
-    #         fluffy = True
-    #     else:
-    #         fluffy = False
-    #
-    #     return Vacancy.objects.all()
+        if category:
+            vacancies = Vacancy.objects.filter(specialty__code=category)
+            category_name = Specialty.objects.filter(code=category).first().title
 
-
-# class ListVacanciesCatView(ListView):
-#     model = Vacancy
-#     context_object_name = 'vacancy'
-#     template_name = 'vacancies.html'
+        context = {
+            'vacancies': vacancies,
+            'category_name': category_name,
+        }
+        return render(request, 'vacancies/vacancies.html', context)
 
 
-class DetailVacancyView(DetailView):
-    ...
+class VacancyView(View):
+    def get(self, request, pk):
+        vacancy = Vacancy.objects.filter(id=pk).first()
+
+        context = {
+            'vacancy': vacancy,
+        }
+        return render(request, 'vacancies/vacancy.html', context)
 
 
-class MainView(ListView):
-    model = Specialty
-    context_object_name = 'specialties'
-    template_name = 'index.html'
+class MainView(View):
+    def get(self, request):
+        specialties = Specialty.objects.all()
+        companies = Company.objects.all()
 
-    def get_context_data(self, **kwargs):
-        context = super(MainView, self).get_context_data(**kwargs)
-        context['companies'] = Company.objects.all()
-        return context
+        context = {
+            'specialties': specialties,
+            'companies': companies,
+        }
+        return render(request, 'index.html', context)
 
 
 def main_view(request):

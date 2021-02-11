@@ -4,7 +4,11 @@
 
   <main class="container mt-3">
     <section>
-      <h1 class="h1 text-center mx-auto mt-4 pt-5" style="font-size: 70px;"><strong>Бэкенд</strong></h1>
+      <h1 class="h1 text-center mx-auto mt-4 pt-5" style="font-size: 70px;">
+        <strong>
+          {% if category_name %} {{ category_name }} {% else %} Все вакансии {% endif %}
+        </strong>
+      </h1>
       <p class="text-center pt-1">{{ vacancies.count }} вакансий</p>
       <div class="row mt-5">
         <div class="col-12 col-lg-8 offset-lg-2 m-auto">
@@ -13,9 +17,9 @@
               <div class="card-body px-4">
                 <div class="row">
                   <div class="col-12 col-md-8 col-lg-9">
-                    <h2 class="h2 pb-2">{{ vacancy.title }}</h2>
-                    <p class="mb-2">{% for skill in vacancy.skills %} {{ skill.name }} {% endfor %}</p>
-                    <p>От {{ vacancy.salary_min }} до {{ vacancy.salary_max }} руб.</p>
+                    <h2 class="h2 pb-2"><a href="{% url 'vacancy' vacancy.id %}">{{ vacancy.title }}</a></h2>
+                    <p>Бэкенд • Средний (Middle) • PHP • PostgreSQL • MySQL • Node.js • Laravel • Symfony • Yii framework • Sails.js • Rabbitmq • Kafka</p>
+                    <p>От {{ vacancy.salary_min }} до {{ vacancy.salary_max }} ₽</p>
                     <p class="text-muted pt-1">{{ vacancy.published_at }}</p>
                   </div>
                   <div class="col-12 col-md-4 col-lg-3 d-flex align-items-end">
@@ -25,51 +29,6 @@
               </div>
             </div>
           {% endfor %}
-          <div class="card mb-4">
-            <div class="card-body px-4">
-              <div class="row">
-                <div class="col-12 col-md-8 col-lg-9">
-                  <h2 class="h2 pb-2">Backend-разработчик</h2>
-                  <p>Бэкенд • Средний (Middle) • PHP • PostgreSQL • MySQL • Node.js • Laravel • Symfony • Yii framework • Sails.js • Rabbitmq • Kafka</p>
-                  <p class="mb-2">От 180 000 до 250 000 руб.</p>
-                  <p class="text-muted pt-1">9 декабря</p>
-                </div>
-                <div class="col-12 col-md-4 col-lg-3 d-flex align-items-end">
-                  <a href="#"><img src="https://place-hold.it/130x80" width="130" height="80" alt=""></a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="card mb-4">
-            <div class="card-body px-4">
-              <div class="row">
-                <div class="col-12 col-md-8 col-lg-9">
-                  <h2 class="h2 pb-2">Backend Middle/Senior</h2>
-                  <p class="mb-2">Бэкенд • Старший (Senior) • C# • ASP.NET MVC • MySQL • Git</p>
-                  <p>Radyushin & Co • Тольятти • Полный рабочий день</p>
-                  <p class="text-muted pt-1">9 декабря</p>
-                </div>
-                <div class="col-12 col-md-4 col-lg-3 d-flex align-items-end">
-                  <a href="#"><img src="https://place-hold.it/130x80" width="130" height="80" alt=""></a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="card mb-4">
-            <div class="card-body px-4">
-              <div class="row">
-                <div class="col-12 col-md-8 col-lg-9">
-                  <h2 class="h2 pb-2">Backend-разработчик</h2>
-                  <p class="mb-2">Бэкенд • Средний (Middle) • PHP • PostgreSQL • MySQL • Node.js • Laravel • Symfony • Yii framework • Sails.js • Rabbitmq • Kafka</p>
-                  <p>От 180 000 до 250 000 руб.</p>
-                  <p class="text-muted pt-1">9 декабря</p>
-                </div>
-                <div class="col-12 col-md-4 col-lg-3 d-flex align-items-end">
-                  <a href="#"><img src="https://place-hold.it/130x80" width="130" height="80" alt=""></a>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
