@@ -16,7 +16,12 @@
             <h1 class="h2 mt-4 font-weight-bold">{{ vacancy.title }}</h1>
             <p class="m-0 pl-3">{{ vacancy.salary_min }} – {{ vacancy.salary_max }} ₽</p>
           </div>
-          <p class="mt-2">Бэкенд • Средний (Middle) • PHP • PostgreSQL • MySQL • Node.js • Laravel • Symfony • Yii framework • Sails.js • Rabbitmq • Kafka</p>
+          <p class="mt-2">
+            {{ vacancy.specialty.title }} •
+            {% for skill in vacancy.skills.all %}
+              {{ skill.name }} •
+            {% endfor %}
+          </p>
           <p class="text-muted mb-4">{{ vacancy.company.name|title }} ({{ vacancy.company.employee_count }} человек), {{ vacancy.company.location }} или удаленно</p>
           <div style="line-height: 1.8;">
             {{ vacancy.description|safe }}
