@@ -4,19 +4,20 @@ import django
 os.environ['DJANGO_SETTINGS_MODULE'] = 'stepik_vacancies.settings'
 django.setup()
 
-
 from vacancies.models import Skill, Specialty, Vacancy
 from companies.models import Company
 import data
 
 
-def main():
+def import_specialities():
     for specialty in data.specialties:
         Specialty.objects.create(
             code=specialty['code'],
-            title=specialty['title']
+            title=specialty['title'],
         )
 
+
+def import_companies():
     for company in data.companies:
         Company.objects.create(
             id=company['id'],
@@ -27,6 +28,8 @@ def main():
             employee_count=company['employee_count'],
         )
 
+
+def import_skills_jobs():
     skills = set()
     for job in data.jobs:
         skills.update(set(job['skills'].split(', ')))
@@ -47,6 +50,12 @@ def main():
         for skill in job['skills'].split(', '):
             vacancy.skills.add(Skill.objects.get(name=skill))
             vacancy.save()
+
+
+def main():
+    import_specialities()
+    import_companies()
+    import_skills_jobs()
 
 
 if __name__ == '__main__':
