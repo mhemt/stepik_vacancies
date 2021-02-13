@@ -2,7 +2,7 @@ from django.http import HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render
 from django.views.generic import View
 
-from vacancies.models import Specialty, Skill, Vacancy
+from vacancies.models import Specialty, Vacancy
 from companies.models import Company
 
 
@@ -24,7 +24,7 @@ class VacanciesView(View):
 
 class VacancyView(View):
     def get(self, request, pk):
-        vacancy = Vacancy.objects.filter(id=pk).first()
+        vacancy = Vacancy.objects.get(id=pk)
 
         context = {
             'vacancy': vacancy,
@@ -49,8 +49,8 @@ def main_view(request):
 
 
 def custom_handler404(request, exception):
-    return HttpResponseNotFound('Ой, что то сломалось... Простите извините!')
+    return HttpResponseNotFound('Ой, что то сломалось... Простите извините! (404)')
 
 
 def custom_handler500(request):
-    return HttpResponseServerError('Ой, что то сломалось... Простите извините!')
+    return HttpResponseServerError('Ой, что то сломалось... Простите извините! (500)')

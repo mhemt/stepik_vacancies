@@ -15,10 +15,13 @@ Including another URLconf
 """
 from django.urls import path, include
 
-from vacancies.views import MainView
+from vacancies.views import MainView, custom_handler500, custom_handler404
 
 urlpatterns = [
     path('', MainView.as_view(), name='index'),
     path('vacancies/', include('vacancies.urls')),
     path('companies/', include('companies.urls')),
 ]
+
+handler404 = custom_handler404
+handler500 = custom_handler500
