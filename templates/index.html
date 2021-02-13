@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load pluralize_ru %}
 
 {% block container %}
 
@@ -36,7 +37,7 @@
               <div class="card-body">
                 <p class="card-text mb-2">{{ specialty.title}}</p>
 <!--                TODO: сделать правильное окончание-->
-                <p class="card-text"><a href="{% url 'category' specialty.code %}">{{ specialty.vacancies.count }} вакансий</a></p>
+                <p class="card-text"><a href="{% url 'category' specialty.code %}">{{ specialty.vacancies.count|pluralize_ru:"вакансия, вакансии, вакансий" }}</a></p>
               </div>
             </div>
           </div>
@@ -55,7 +56,7 @@
               </a>
               <div class="card-body">
 <!--            TODO: сделать правильное окончание-->
-                <p class="card-text"><a href="{% url 'company' company.id %}">{{ company.vacancies.count }} вакансий</a></p>
+                <p class="card-text"><a href="{% url 'company' company.id %}">{{ company.vacancies.count|pluralize_ru:"вакансия, вакансии, вакансий" }}</a></p>
               </div>
             </div>
           </div>
