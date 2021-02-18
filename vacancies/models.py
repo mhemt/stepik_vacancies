@@ -9,9 +9,15 @@ class Specialty(models.Model):
     title = models.CharField(max_length=20)
     picture = models.URLField(default='https://place-hold.it/100x60')
 
+    def __str__(self):
+        return self.title
+
 
 class Skill(models.Model):
     name = models.CharField(max_length=30)
+
+    def __str__(self):
+        return self.name
 
 
 class Vacancy(models.Model):
@@ -23,3 +29,6 @@ class Vacancy(models.Model):
     salary_min = models.IntegerField(null=True)
     salary_max = models.IntegerField(null=True)
     published_at = models.DateField(default=date.today)
+
+    def __str__(self):
+        return self.title
