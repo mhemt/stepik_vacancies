@@ -2,8 +2,7 @@ from django.http import HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render
 from django.views.generic import View
 
-from vacancies.models import Specialty, Vacancy
-from companies.models import Company
+from .models import Company, Specialty, Vacancy
 
 
 class VacanciesView(View):
@@ -19,7 +18,7 @@ class VacanciesView(View):
             'vacancies': vacancies,
             'category_name': category_name,
         }
-        return render(request, 'vacancies/vacancies.html', context)
+        return render(request, 'vacancies.html', context)
 
 
 class VacancyView(View):
@@ -29,7 +28,7 @@ class VacancyView(View):
         context = {
             'vacancy': vacancy,
         }
-        return render(request, 'vacancies/vacancy.html', context)
+        return render(request, 'vacancy.html', context)
 
 
 class MainView(View):
@@ -44,8 +43,47 @@ class MainView(View):
         return render(request, 'index.html', context)
 
 
-def main_view(request):
-    return render(request, 'index.html')
+class DetailCompanyView(View):
+    def get(self, request, pk):
+        company = Company.objects.get(id=pk)
+        vacancies = Vacancy.objects.filter(company=company)
+
+        context = {
+            'company': company,
+            'vacancies': vacancies,
+        }
+        return render(request, 'company.html', context)
+
+
+class ApplicationSentView(View):
+    def get(self, request, pk):
+        return render(request, 'sent.html')
+
+
+class MyCompanyView(View):
+    def get(self, request):
+        # return render(request, 'company-create.html')
+        return render(request, 'company-edit.html')
+
+
+class MyCompanyVacancies(View):
+    def get(self, request):
+        return render(request, 'vacancies-list.html')
+
+
+class MyCompanyVacancyEdit(View):
+    def get(self, request, pk):
+        return render(request, 'vacancy-edit.html')
+
+
+class LoginView(View):
+    def get(self, request):
+        return render(request, 'login.html')
+
+
+class RegisterView(View):
+    def get(self, request):
+        return render(request, 'register.html')
 
 
 def custom_handler404(request, exception):

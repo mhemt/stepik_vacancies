@@ -4,8 +4,7 @@ import django
 os.environ['DJANGO_SETTINGS_MODULE'] = 'stepik_vacancies.settings'
 django.setup()
 
-from vacancies.models import Skill, Specialty, Vacancy
-from companies.models import Company
+from vacancies.models import Company, Skill, Specialty, Vacancy
 import data
 
 

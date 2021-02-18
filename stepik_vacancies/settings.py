@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'r=9#zfo&8w+q@7$4dr-b$r4o+*7+e22!sv@hm&d%1nef0%dng8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'companies',
+    'django_extensions',
     'vacancies',
 ]
 
@@ -120,3 +120,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = 'media'
+MEDIA_COMPANY_IMAGE_DIR = 'company_images'
+MEDIA_SPECIALTY_IMAGE_DIR = 'specialty_images'
