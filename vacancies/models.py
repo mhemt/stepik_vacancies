@@ -9,7 +9,7 @@ class Company(models.Model):
     name = models.CharField(max_length=100)
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name="company")
     location = models.CharField(max_length=30)
-    logo = models.ImageField(upload_to=MEDIA_COMPANY_IMAGE_DIR)
+    logo = models.ImageField(upload_to=MEDIA_COMPANY_IMAGE_DIR, default='company_images/120x40.gif')
     description = models.TextField()
     employee_count = models.IntegerField()
 

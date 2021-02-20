@@ -1,7 +1,11 @@
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.views import LoginView
 from django.http import HttpResponseNotFound, HttpResponseServerError
-from django.shortcuts import render
-from django.views.generic import View
+from django.shortcuts import render, redirect
+from django.views.generic import View, CreateView
 
+from .forms import RegisterForm, LoginForm, ApplicationForm, CompanyEditForm
 from .models import Company, Specialty, Vacancy
 
 
@@ -27,8 +31,19 @@ class VacancyView(View):
 
         context = {
             'vacancy': vacancy,
+            'form': ApplicationForm,
         }
         return render(request, 'vacancy.html', context)
+
+    def post(self, request, pk):
+        form = ApplicationForm(request.POST)
+        if form.is_valid():
+            application = form.save(commit=False)
+            application.user_id = request.user.id
+            application.vacancy_id = pk
+            application.save()
+            return redirect('application_sent', pk=pk)
+        return render(request, 'vacancy.html', context={'form': form})
 
 
 class MainView(View):
@@ -43,7 +58,7 @@ class MainView(View):
         return render(request, 'index.html', context)
 
 
-class DetailCompanyView(View):
+class CompanyView(View):
     def get(self, request, pk):
         company = Company.objects.get(id=pk)
         vacancies = Vacancy.objects.filter(company=company)
@@ -62,8 +77,36 @@ class ApplicationSentView(View):
 
 class MyCompanyView(View):
     def get(self, request):
-        # return render(request, 'company-create.html')
-        return render(request, 'company-edit.html')
+        user = request.user
+        user_company = Company.objects.filter(owner=user).first()
+        if user_company:
+            print(user.company.name)
+            form = CompanyEditForm(instance=user_company)
+            return render(request, 'company-edit.html', context={'from': form})
+        else:
+            return render(request, 'company-create.html')
+
+    def post(self, request):
+        form = CompanyEditForm(request.POST)
+        if form.is_valid():
+            application = form.save(commit=False)
+            application.user_id = request.user.id
+            application.save()
+            # return redirect('mycompany')
+        return render(request, 'company-edit.html', context={'form': form})
+
+
+class MyCompanyDummyView(View):
+    def get(self, request):
+        company = Company.objects.create(
+            name='',
+            owner=request.user,
+            location='',
+            logo='',
+            description='',
+            employee_count=0,
+        )
+        return redirect('mycompany')
 
 
 class MyCompanyVacancies(View):
@@ -76,14 +119,16 @@ class MyCompanyVacancyEdit(View):
         return render(request, 'vacancy-edit.html')
 
 
-class LoginView(View):
-    def get(self, request):
-        return render(request, 'login.html')
+class MyLoginView(LoginView):
+    redirect_authenticated_user = True
+    form_class = LoginForm
+    template_name = 'login.html'
 
 
-class RegisterView(View):
-    def get(self, request):
-        return render(request, 'register.html')
+class RegisterView(CreateView):
+    form_class = RegisterForm
+    success_url = '/'
+    template_name = 'register.html'
 
 
 def custom_handler404(request, exception):

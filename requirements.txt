@@ -5,6 +5,7 @@ attrs==20.3.0
 cognitive-complexity==1.2.0
 colorama==0.4.4
 Django==3.1.6
+django-crispy-forms==1.11.0
 django-extensions==3.1.1
 eradicate==2.0.0
 flake8==3.8.4
