@@ -1,5 +1,5 @@
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
+from crispy_forms.layout import Submit, Layout, Row, Column
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -74,7 +74,22 @@ class CompanyEditForm(forms.ModelForm):
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-        self.helper.add_input(Submit('submit', 'Сохранить', css_class='btn-info'))
+        # self.helper.add_input(Submit('submit', 'Сохранить', css_class='btn-info'))
+
+        self.helper.layout = Layout(
+            Row(
+                Column('name', css_class='form-group pb-2'),
+                Column('logo', css_class='form-group pb-2'),
+                css_class='form-row'
+            ),
+            Row(
+                Column('employee_count', css_class='form-group pb-2'),
+                Column('location', css_class='form-group pb-2'),
+                css_class='form-row'
+            ),
+            'description',
+            Submit('submit', 'Сохранить', css_class='btn-info')
+        )
 
     class Meta:
         model = Company

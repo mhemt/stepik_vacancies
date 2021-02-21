@@ -12,15 +12,11 @@
         <div class="card">
           <div class="card-body px-4 pb-4">
             <section class="tab-pane fade show active">
-              <h2 class="h4 pt-2 pb-3">Информация о компании</h2>
-              {% if is_updated %}
+              <h2 class="h4 pt-2 pb-3">Вакансии</h2>
                 <p class="alert alert-info" role="alert">
-                  Информация о компании обновлена
+                  У вас пока нет вакансий, но вы можете создать первую!
                 </p>
-              {% endif %}
-
-              {% crispy form %}
-
+                <a href="{% url 'my_company_vacancy_create' %}" class="btn btn-info mb-2">Добавить вакансию</a>
             </section>
           </div>
         </div>

@@ -80,38 +80,57 @@ class MyCompanyView(View):
         user = request.user
         user_company = Company.objects.filter(owner=user).first()
         if user_company:
-            print(user.company.name)
             form = CompanyEditForm(instance=user_company)
-            return render(request, 'company-edit.html', context={'from': form})
+            return render(request, 'test.html', context={'form': form})
         else:
             return render(request, 'company-create.html')
 
     def post(self, request):
-        form = CompanyEditForm(request.POST)
+        user = request.user
+        user_company = Company.objects.filter(owner=user).first()
+        form = CompanyEditForm(request.POST, request.FILES, instance=user_company)
         if form.is_valid():
             application = form.save(commit=False)
-            application.user_id = request.user.id
+            application.owner_id = request.user.id
             application.save()
-            # return redirect('mycompany')
+            return render(request, 'company-edit.html', context={'form': form, 'is_updated': True})  # is updated попрбовать через messages
         return render(request, 'company-edit.html', context={'form': form})
 
 
 class MyCompanyDummyView(View):
     def get(self, request):
-        company = Company.objects.create(
+        # TODO: попробовать создать форму, заполнить ее пустотой и отправить в рендер?
+        Company.objects.create(
             name='',
             owner=request.user,
             location='',
-            logo='',
             description='',
             employee_count=0,
         )
-        return redirect('mycompany')
+        return redirect('my_company')
 
 
 class MyCompanyVacancies(View):
     def get(self, request):
-        return render(request, 'vacancies-list.html')
+        user = request.user
+        user_company = Company.objects.filter(owner=user).first()
+        user_vacancies = Vacancy.objects.filter(company=user_company)
+        if user_vacancies:
+            # form = CompanyEditForm(instance=user_company)
+            return render(request, 'vacancy-edit.html')
+        else:
+            return render(request, 'vacancy-create.html')
+
+    def post(self, request):
+        user = request.user
+        user_company = Company.objects.filter(owner=user).first()
+        form = CompanyEditForm(request.POST, request.FILES, instance=user_company)
+        if form.is_valid():
+            application = form.save(commit=False)
+            application.owner_id = request.user.id
+            application.save()
+            return render(request, 'company-edit.html', context={'form': form, 'is_updated': True})
+        return render(request, 'company-edit.html', context={'form': form})
 
 
 class MyCompanyVacancyEdit(View):
