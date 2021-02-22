@@ -1,10 +1,11 @@
+from crispy_forms.bootstrap import InlineCheckboxes
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Row, Column
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
-from vacancies.models import Application, Company
+from vacancies.models import Application, Company, Vacancy
 
 
 class RegisterForm(UserCreationForm):
@@ -74,7 +75,6 @@ class CompanyEditForm(forms.ModelForm):
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-        # self.helper.add_input(Submit('submit', 'Сохранить', css_class='btn-info'))
 
         self.helper.layout = Layout(
             Row(
@@ -88,9 +88,43 @@ class CompanyEditForm(forms.ModelForm):
                 css_class='form-row'
             ),
             'description',
-            Submit('submit', 'Сохранить', css_class='btn-info')
+            Submit('submit', 'Сохранить', css_class='btn-info'),
         )
 
     class Meta:
         model = Company
         fields = ('name', 'location', 'logo', 'description', 'employee_count',)
+
+
+class VacancyEditForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['title'].label = 'Название вакансии'
+        self.fields['specialty'].label = 'Специализация'
+        self.fields['skills'].label = 'Требуемые навыки'
+        self.fields['description'].label = 'Описание вакансии'
+        self.fields['salary_min'].label = 'Зарплата от'
+        self.fields['salary_max'].label = 'Зарплата до'
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+
+        self.helper.layout = Layout(
+            Row(
+                Column('title', css_class='form-group pb-2'),
+                Column('specialty', css_class='form-group pb-2'),
+                css_class='form-row'
+            ),
+            Row(
+                Column('salary_min', css_class='form-group pb-2'),
+                Column('salary_max', css_class='form-group pb-2'),
+                css_class='form-row'
+            ),
+            InlineCheckboxes('skills'),
+            'description',
+            Submit('submit', 'Сохранить', css_class='btn-info'),
+        )
+
+    class Meta:
+        model = Vacancy
+        fields = ('title', 'specialty', 'skills', 'description', 'salary_min', 'salary_max',)

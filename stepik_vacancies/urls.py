@@ -5,8 +5,8 @@ from django.contrib import admin
 from django.urls import path
 
 from vacancies.views import MainView, VacanciesView, VacancyView, CompanyView, ApplicationSentView, \
-    MyCompanyView, MyCompanyVacancies, MyCompanyVacancyEdit, MyLoginView, RegisterView, \
-    custom_handler500, custom_handler404, MyCompanyDummyView
+    MyCompanyView, MyCompanyVacancyCreateView, MyCompanyVacancyEdit, MyLoginView, RegisterView, \
+    custom_handler500, custom_handler404, MyCompanyCreateView, MyCompanyVacanciesView
 
 urlpatterns = [
     path('', MainView.as_view(), name='index'),
@@ -16,9 +16,9 @@ urlpatterns = [
     path('login/', MyLoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('mycompany/', MyCompanyView.as_view(), name='my_company'),
-    path('mycompany/create/', MyCompanyDummyView.as_view(), name='my_company_create'),
-    path('mycompany/vacancies/', MyCompanyVacancies.as_view(), name='my_company_vacancies'),
-    path('mycompany/vacancies/create/', MyCompanyVacancies.as_view(), name='my_company_vacancy_create'),
+    path('mycompany/create/', MyCompanyCreateView.as_view(), name='my_company_create'),
+    path('mycompany/vacancies/', MyCompanyVacanciesView.as_view(), name='my_company_vacancies'),
+    path('mycompany/vacancies/create/', MyCompanyVacancyCreateView.as_view(), name='my_company_vacancy_create'),
     path('mycompany/vacancies/<int:pk>/', MyCompanyVacancyEdit.as_view(), name='my_company_vacancy_edit'),
     path('register/', RegisterView.as_view(), name='register'),
     path('vacancies/', VacanciesView.as_view(), name='vacancies'),
