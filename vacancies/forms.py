@@ -28,7 +28,11 @@ class RegisterForm(UserCreationForm):
 
     class Meta:
         model = get_user_model()
-        fields = ('username', 'first_name', 'last_name',)
+        fields = (
+            'username',
+            'first_name',
+            'last_name',
+        )
 
 
 class LoginForm(AuthenticationForm):
@@ -61,7 +65,11 @@ class ApplicationForm(forms.ModelForm):
 
     class Meta:
         model = Application
-        fields = ('written_username', 'written_phone', 'written_cover_letter',)
+        fields = (
+            'written_username',
+            'written_phone',
+            'written_cover_letter',
+        )
 
 
 class CompanyEditForm(forms.ModelForm):
@@ -80,12 +88,12 @@ class CompanyEditForm(forms.ModelForm):
             Row(
                 Column('name', css_class='form-group pb-2'),
                 Column('logo', css_class='form-group pb-2'),
-                css_class='form-row'
+                css_class='form-row',
             ),
             Row(
                 Column('employee_count', css_class='form-group pb-2'),
                 Column('location', css_class='form-group pb-2'),
-                css_class='form-row'
+                css_class='form-row',
             ),
             'description',
             Submit('submit', 'Сохранить', css_class='btn-info'),
@@ -93,7 +101,13 @@ class CompanyEditForm(forms.ModelForm):
 
     class Meta:
         model = Company
-        fields = ('name', 'location', 'logo', 'description', 'employee_count',)
+        fields = (
+            'name',
+            'location',
+            'logo',
+            'description',
+            'employee_count',
+        )
 
 
 class VacancyEditForm(forms.ModelForm):
@@ -113,12 +127,12 @@ class VacancyEditForm(forms.ModelForm):
             Row(
                 Column('title', css_class='form-group pb-2'),
                 Column('specialty', css_class='form-group pb-2'),
-                css_class='form-row'
+                css_class='form-row',
             ),
             Row(
                 Column('salary_min', css_class='form-group pb-2'),
                 Column('salary_max', css_class='form-group pb-2'),
-                css_class='form-row'
+                css_class='form-row',
             ),
             InlineCheckboxes('skills'),
             'description',
@@ -127,4 +141,11 @@ class VacancyEditForm(forms.ModelForm):
 
     class Meta:
         model = Vacancy
-        fields = ('title', 'specialty', 'skills', 'description', 'salary_min', 'salary_max',)
+        fields = (
+            'title',
+            'specialty',
+            'skills',
+            'description',
+            'salary_min',
+            'salary_max',
+        )

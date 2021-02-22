@@ -1,12 +1,10 @@
-from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render, redirect
 from django.views.generic import View, CreateView
 
 from .forms import RegisterForm, LoginForm, ApplicationForm, CompanyEditForm, VacancyEditForm
-from .models import Company, Specialty, Vacancy
+from .models import Company, Specialty, Vacancy, Application
 
 
 class VacanciesView(View):
@@ -106,7 +104,12 @@ class MyCompanyView(View):
             application = form.save(commit=False)
             application.owner_id = request.user.id
             application.save()
-            return render(request, 'company-edit.html', context={'form': form, 'is_updated': True})  #TODO: is updated попрбовать через messages
+
+            context = {
+                'form': form,
+                'is_updated': True,
+            }
+            return render(request, 'company-edit.html', context=context)  # TODO: is updated попрбовать через messages
         return render(request, 'company-edit.html', context={'form': form})
 
 
@@ -129,21 +132,9 @@ class MyCompanyVacanciesView(View):
         user_company = Company.objects.filter(owner=user).first()   # TODO: get_or_404
         user_vacancies = Vacancy.objects.filter(company=user_company)
         if user_vacancies:
-            # form = CompanyEditForm(instance=user_company)
             return render(request, 'vacancies-list.html', context={'vacancies': user_vacancies})
         else:
             return render(request, 'vacancy-create.html')
-
-    # def post(self, request):
-    #     user = request.user
-    #     user_company = Company.objects.filter(owner=user).first()
-    #     form = CompanyEditForm(request.POST, request.FILES, instance=user_company)
-    #     if form.is_valid():
-    #         application = form.save(commit=False)
-    #         application.owner_id = request.user.id
-    #         application.save()
-    #         return render(request, 'company-edit.html', context={'form': form, 'is_updated': True})
-    #     return render(request, 'company-edit.html', context={'form': form})
 
 
 class MyCompanyVacancyEdit(View):
@@ -151,17 +142,27 @@ class MyCompanyVacancyEdit(View):
         vacancy = Vacancy.objects.filter(id=pk).first()  # TODO: get_or_404
         if vacancy:
             form = VacancyEditForm(instance=vacancy)
-            return render(request, 'test.html', context={'form': form})
+            applications = Application.objects.filter(vacancy=vacancy)
+
+            context = {
+                'form': form,
+                'applications': applications,
+            }
+            return render(request, 'vacancy-edit.html', context=context)
 
     def post(self, request, pk):
         vacancy = Vacancy.objects.filter(id=pk).first()  # TODO: get_or_404
         form = VacancyEditForm(request.POST, instance=vacancy)
         if form.is_valid():
             application = form.save(commit=False)
-            # application.owner_id = request.user.id
             application.save()
-            return render(request, 'test.html', context={'form': form, 'is_updated': True})  #TODO: is updated попрбовать через messages
-        return render(request, 'test.html', context={'form': form})
+
+            context = {
+                'form': form,
+                'is_updated': True,
+            }
+            return render(request, 'vacancy-edit.html', context=context)  # TODO: is updated попрбовать через messages
+        return render(request, 'vacancy-editpython.html', context={'form': form})
 
 
 class MyLoginView(LoginView):
