@@ -5,7 +5,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
-from vacancies.models import Application, Company, Vacancy
+from vacancies.models import Application, Company, Vacancy, Resume
 
 
 class RegisterForm(UserCreationForm):
@@ -56,6 +56,8 @@ class ApplicationForm(forms.ModelForm):
         self.fields['written_phone'].label = 'Ваш телефон'
         self.fields['written_cover_letter'].label = 'Сопроводительное письмо'
 
+        self.fields['written_cover_letter'].widget.attrs['rows'] = 5
+
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.add_input(Submit('submit', 'Отправить', css_class='btn-primary'))
@@ -79,6 +81,8 @@ class CompanyEditForm(forms.ModelForm):
         self.fields['logo'].label = 'Логотип'
         self.fields['description'].label = 'Информация о компании'
         self.fields['employee_count'].label = 'Количество человек в компании'
+
+        self.fields['description'].widget.attrs['rows'] = 4
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
@@ -119,6 +123,8 @@ class VacancyEditForm(forms.ModelForm):
         self.fields['salary_min'].label = 'Зарплата от'
         self.fields['salary_max'].label = 'Зарплата до'
 
+        self.fields['description'].widget.attrs['rows'] = 4
+
         self.helper = FormHelper()
         self.helper.form_method = 'post'
 
@@ -147,4 +153,60 @@ class VacancyEditForm(forms.ModelForm):
             'description',
             'salary_min',
             'salary_max',
+        )
+
+
+class ResumeEditForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['name'].label = 'Имя'
+        self.fields['surname'].label = 'Фамилия'
+        self.fields['status'].label = 'Готовность к работе'
+        self.fields['salary'].label = 'Ожидаемое вознаграждение'
+        self.fields['specialty'].label = 'Специализация'
+        self.fields['grade'].label = 'Квалификация'
+        self.fields['education'].label = 'Образование'
+        self.fields['experience'].label = 'Опыт работы'
+        self.fields['portfolio'].label = 'Ссылка на портфолио'
+
+        self.fields['education'].widget.attrs['rows'] = 4
+        self.fields['experience'].widget.attrs['rows'] = 4
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+
+        self.helper.layout = Layout(
+            Row(
+                Column('name', css_class='form-group pb-2'),
+                Column('surname', css_class='form-group pb-2'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('status', css_class='form-group pb-2'),
+                Column('salary', css_class='form-group pb-2'),
+                css_class='form-row',
+            ),
+            Row(
+                Column('specialty', css_class='form-group pb-2'),
+                Column('grade', css_class='form-group pb-2'),
+                css_class='form-row',
+            ),
+            'education',
+            'experience',
+            'portfolio',
+            Submit('submit', 'Сохранить', css_class='btn-info'),
+        )
+
+    class Meta:
+        model = Resume
+        fields = (
+            'name',
+            'surname',
+            'status',
+            'salary',
+            'specialty',
+            'grade',
+            'education',
+            'experience',
+            'portfolio',
         )

@@ -1,13 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.http import HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.generic import View, CreateView
 
-from .forms import RegisterForm, LoginForm, ApplicationForm, CompanyEditForm, VacancyEditForm
-from .models import Company, Specialty, Vacancy, Application
+from .forms import RegisterForm, LoginForm, ApplicationForm, CompanyEditForm, VacancyEditForm, ResumeEditForm
+from .models import Company, Specialty, Vacancy, Application, Resume
 
 
 class MainView(View):
@@ -65,7 +65,6 @@ class VacancyView(View):
 
 class CompanyView(View):
     def get(self, request, pk):
-        # company = get_object_or_404(Company.objects.prefetch_related('vacancies'), id=pk)
         company = get_object_or_404(Company, id=pk)
         vacancies = Vacancy.objects.filter(company=company)\
             .prefetch_related('skills')\
@@ -87,11 +86,7 @@ class ApplicationSentView(View):
 class MyCompanyCreateView(View):
     def get(self, request):
         Company.objects.create(
-            name='',
             owner=request.user,
-            location='',
-            description='',
-            employee_count=0,
         )
         return redirect('my_company')
 
@@ -100,7 +95,7 @@ class MyCompanyCreateView(View):
 class MyCompanyView(View):
     def get(self, request):
         user = request.user
-        user_company = get_object_or_404(Company, owner=user)
+        user_company = Company.objects.filter(owner=user).first()
         if user_company:
             form = CompanyEditForm(instance=user_company)
             return render(request, 'company-edit.html', context={'form': form})
@@ -112,9 +107,7 @@ class MyCompanyView(View):
         user_company = get_object_or_404(Company, owner=user)
         form = CompanyEditForm(request.POST, request.FILES, instance=user_company)
         if form.is_valid():
-            application = form.save(commit=False)
-            application.owner_id = user.id
-            application.save()
+            form.save()
 
             context = {
                 'form': form,
@@ -128,11 +121,7 @@ class MyCompanyView(View):
 class MyCompanyVacancyCreateView(View):
     def get(self, request):
         vacancy = Vacancy.objects.create(
-            title='',
             company=request.user.company,
-            description='',
-            salary_min=0,
-            salary_max=0,
         )
         return redirect('my_company_vacancy_edit', vacancy.id)
 
@@ -152,7 +141,8 @@ class MyCompanyVacanciesView(View):
 @method_decorator(login_required, 'dispatch')
 class MyCompanyVacancyEdit(View):
     def get(self, request, pk):
-        vacancy = get_object_or_404(Vacancy, id=pk)
+        user = request.user
+        vacancy = get_object_or_404(Vacancy, id=pk, company__owner__id=user.id)
         if vacancy:
             form = VacancyEditForm(instance=vacancy)
             applications = Application.objects.filter(vacancy=vacancy)
@@ -175,6 +165,55 @@ class MyCompanyVacancyEdit(View):
             }
             return render(request, 'vacancy-edit.html', context=context)
         return render(request, 'vacancy-edit.html', context={'form': form})
+
+
+@method_decorator(login_required, 'dispatch')
+class MyResumeCreateView(View):
+    def get(self, request):
+        Resume.objects.create(
+            owner=request.user,
+        )
+        return redirect('my_resume')
+
+
+@method_decorator(login_required, 'dispatch')
+class MyResumeView(View):
+    def get(self, request):
+        user = request.user
+        user_resume = Resume.objects.filter(owner=user).select_related('specialty').first()
+        if user_resume:
+            form = ResumeEditForm(instance=user_resume)
+            return render(request, 'resume-edit.html', context={'form': form})
+        else:
+            return render(request, 'resume-create.html')
+
+    def post(self, request):
+        user = request.user
+        user_resume = get_object_or_404(Resume, owner=user)
+        form = ResumeEditForm(request.POST, instance=user_resume)
+        if form.is_valid():
+            form.save()
+
+            context = {
+                'form': form,
+                'is_updated': True,
+            }
+            return render(request, 'resume-edit.html', context=context)
+        return render(request, 'resume-edit.html', context={'form': form})
+
+
+class SearchView(View):
+    def get(self, request):
+        query = self.request.GET.get('s').strip()
+        vacancies = Vacancy.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))\
+            .prefetch_related('skills')\
+            .select_related('company', 'specialty')
+
+        context = {
+            'vacancies': vacancies,
+            'query': query,
+        }
+        return render(request, 'search.html', context=context)
 
 
 class MyLoginView(LoginView):

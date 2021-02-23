@@ -5,6 +5,6 @@ register = template.Library()
 
 @register.filter()
 def get_url_pk(url: str):
-    for i in url.split('/'):
-        if i.isnumeric():
-            return i
+    for element in url.split('/'):
+        if element.isnumeric():
+            return element

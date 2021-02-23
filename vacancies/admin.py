@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Company, Specialty, Skill, Vacancy, Application
+from .models import Company, Specialty, Skill, Vacancy, Application, Resume
 
 
 @admin.register(Company)
@@ -56,3 +56,22 @@ class ApplicationAdmin(admin.ModelAdmin):
         'user',
     )
     list_filter = ('vacancy', 'user')
+
+
+@admin.register(Resume)
+class ResumeAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'owner',
+        'name',
+        'surname',
+        'status',
+        'salary',
+        'specialty',
+        'grade',
+        'education',
+        'experience',
+        'portfolio',
+    )
+    list_filter = ('owner', 'specialty')
+    search_fields = ('name',)
