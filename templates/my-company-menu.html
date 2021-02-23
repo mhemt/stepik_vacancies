@@ -1,11 +1,15 @@
-  <div class="col-12 col-lg-4">
-    <aside class="pt-3 pb-4 px-4 mb-5 card">
-      <h1 class="h4 pt-2 pb-2">Моя компания</h1>
-      <div class="nav flex-column nav-pills">
-        {% url 'my_company' as my_company_url %}
-        {% url 'my_company_vacancies' as my_company_vacancies_url %}
-        <a class="nav-link {% if request.path == my_company_url %}active{% endif %}" href="{{ my_company_url }}">1. Информация о компании</a>
-        <a class="nav-link {% if request.path == my_company_vacancies_url %}active{% endif %}" href="{{ my_company_vacancies_url }}">2. Вакансии</a>
-      </div>
-    </aside>
-  </div>
+{% load get_url_pk %}
+
+<div class="col-12 col-lg-4">
+  <aside class="pt-3 pb-4 px-4 mb-5 card">
+    <h1 class="h4 pt-2 pb-2">Моя компания</h1>
+    <div class="nav flex-column nav-pills">
+      {% url 'my_company' as my_company_url %}
+      {% url 'my_company_vacancies' as my_company_vacancies_url %}
+      {% url 'my_company_vacancy_edit' request.path|get_url_pk as my_company_vacancy_edit_url %}
+
+      <a class="nav-link {% if request.path == my_company_url %}active{% endif %}" href="{{ my_company_url }}">1. Информация о компании</a>
+      <a class="nav-link {% if request.path == my_company_vacancies_url or request.path == my_company_vacancy_edit_url %}active{% endif %}" href="{{ my_company_vacancies_url }}">2. Вакансии</a>
+    </div>
+  </aside>
+</div>

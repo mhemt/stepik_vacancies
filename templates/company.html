@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load pluralize_ru %}
 
 {% block container %}
 
@@ -11,9 +12,10 @@
         <img src="{{ company.logo.url }}" width="130" height="80" alt="">
       </div>
       <h1 class="h1 text-center mx-auto mt-0 pt-1" style="font-size: 70px;"><strong>{{ company.name|upper }}</strong></h1>
-      <p class="text-center pt-1">Компания, {{ company.location }}, {{ vacancies.count }} вакансий</p>
+      <p class="text-center pt-1">Компания, {{ company.location }}, {{ vacancies|length|pluralize_ru:"вакансия, вакансии, вакансий" }}</p>
       <div class="row mt-5">
         <div class="col-12 col-lg-8 offset-lg-2 m-auto">
+
           {% for vacancy in vacancies %}
           <div class="card mb-4">
             <div class="card-body px-4">
@@ -21,9 +23,9 @@
                 <div class="col-12 col-md-8 col-lg-9">
                   <h2 class="h2 pb-2"><a href="{% url 'vacancy' vacancy.id %}">{{ vacancy.title }}</a></h2>
                   <p class="mb-2">
-                    {{ vacancy.specialty.title }} •
+                    {{ vacancy.specialty.title }}
                     {% for skill in vacancy.skills.all %}
-                      {{ skill.name }} •
+                      • {{ skill.name }}
                     {% endfor %}
                   </p>
                   <p>От {{ vacancy.salary_min }} до {{ vacancy.salary_max }} ₽</p>
@@ -36,6 +38,7 @@
             </div>
           </div>
           {% endfor %}
+
         </div>
       </div>
     </section>

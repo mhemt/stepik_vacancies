@@ -1,37 +1,56 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
+from django.db.models import Count
 from django.http import HttpResponseNotFound, HttpResponseServerError
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.utils.decorators import method_decorator
 from django.views.generic import View, CreateView
 
 from .forms import RegisterForm, LoginForm, ApplicationForm, CompanyEditForm, VacancyEditForm
 from .models import Company, Specialty, Vacancy, Application
 
 
+class MainView(View):
+    def get(self, request):
+        specialties = Specialty.objects.annotate(Count('vacancies'))
+        companies = Company.objects.annotate(Count('vacancies'))
+
+        context = {
+            'specialties': specialties,
+            'companies': companies,
+        }
+        return render(request, 'index.html', context=context)
+
+
 class VacanciesView(View):
     def get(self, request, category=None):
-        vacancies = Vacancy.objects.all()
+        vacancies = Vacancy.objects.prefetch_related('skills').select_related('company', 'specialty').all()
         category_name = None
 
         if category:
-            vacancies = Vacancy.objects.filter(specialty__code=category)
-            category_name = Specialty.objects.filter(code=category).first().title
+            vacancies = vacancies.filter(specialty__code=category)
+            category_name = get_object_or_404(Specialty, code=category).title
 
         context = {
             'vacancies': vacancies,
             'category_name': category_name,
         }
-        return render(request, 'vacancies.html', context)
+        return render(request, 'vacancies.html', context=context)
 
 
+@method_decorator(login_required, 'post')
 class VacancyView(View):
     def get(self, request, pk):
-        vacancy = Vacancy.objects.get(id=pk)
+        vacancy = get_object_or_404(
+            Vacancy.objects.prefetch_related('skills').select_related('company', 'specialty'),
+            id=pk,
+        )
 
         context = {
             'vacancy': vacancy,
             'form': ApplicationForm,
         }
-        return render(request, 'vacancy.html', context)
+        return render(request, 'vacancy.html', context=context)
 
     def post(self, request, pk):
         form = ApplicationForm(request.POST)
@@ -44,28 +63,19 @@ class VacancyView(View):
         return render(request, 'vacancy.html', context={'form': form})
 
 
-class MainView(View):
-    def get(self, request):
-        specialties = Specialty.objects.all()
-        companies = Company.objects.all()
-
-        context = {
-            'specialties': specialties,
-            'companies': companies,
-        }
-        return render(request, 'index.html', context)
-
-
 class CompanyView(View):
     def get(self, request, pk):
-        company = Company.objects.get(id=pk)
-        vacancies = Vacancy.objects.filter(company=company)
+        # company = get_object_or_404(Company.objects.prefetch_related('vacancies'), id=pk)
+        company = get_object_or_404(Company, id=pk)
+        vacancies = Vacancy.objects.filter(company=company)\
+            .prefetch_related('skills')\
+            .select_related('company', 'specialty')
 
         context = {
             'company': company,
             'vacancies': vacancies,
         }
-        return render(request, 'company.html', context)
+        return render(request, 'company.html', context=context)
 
 
 class ApplicationSentView(View):
@@ -73,9 +83,9 @@ class ApplicationSentView(View):
         return render(request, 'sent.html')
 
 
+@method_decorator(login_required, 'dispatch')
 class MyCompanyCreateView(View):
     def get(self, request):
-        # TODO: попробовать создать форму, заполнить ее пустотой и отправить в рендер?
         Company.objects.create(
             name='',
             owner=request.user,
@@ -86,10 +96,11 @@ class MyCompanyCreateView(View):
         return redirect('my_company')
 
 
+@method_decorator(login_required, 'dispatch')
 class MyCompanyView(View):
     def get(self, request):
         user = request.user
-        user_company = Company.objects.filter(owner=user).first()  # TODO: get_or_404
+        user_company = get_object_or_404(Company, owner=user)
         if user_company:
             form = CompanyEditForm(instance=user_company)
             return render(request, 'company-edit.html', context={'form': form})
@@ -98,27 +109,27 @@ class MyCompanyView(View):
 
     def post(self, request):
         user = request.user
-        user_company = Company.objects.filter(owner=user).first()
+        user_company = get_object_or_404(Company, owner=user)
         form = CompanyEditForm(request.POST, request.FILES, instance=user_company)
         if form.is_valid():
             application = form.save(commit=False)
-            application.owner_id = request.user.id
+            application.owner_id = user.id
             application.save()
 
             context = {
                 'form': form,
                 'is_updated': True,
             }
-            return render(request, 'company-edit.html', context=context)  # TODO: is updated попрбовать через messages
+            return render(request, 'company-edit.html', context=context)
         return render(request, 'company-edit.html', context={'form': form})
 
 
+@method_decorator(login_required, 'dispatch')
 class MyCompanyVacancyCreateView(View):
     def get(self, request):
-        # TODO: попробовать создать форму, заполнить ее пустотой и отправить в рендер?
         vacancy = Vacancy.objects.create(
             title='',
-            company=request.user.company.first(),
+            company=request.user.company,
             description='',
             salary_min=0,
             salary_max=0,
@@ -126,20 +137,22 @@ class MyCompanyVacancyCreateView(View):
         return redirect('my_company_vacancy_edit', vacancy.id)
 
 
+@method_decorator(login_required, 'dispatch')
 class MyCompanyVacanciesView(View):
     def get(self, request):
         user = request.user
-        user_company = Company.objects.filter(owner=user).first()   # TODO: get_or_404
-        user_vacancies = Vacancy.objects.filter(company=user_company)
+        user_company = get_object_or_404(Company, owner=user)
+        user_vacancies = Vacancy.objects.filter(company=user_company).prefetch_related('applications')
         if user_vacancies:
             return render(request, 'vacancies-list.html', context={'vacancies': user_vacancies})
         else:
             return render(request, 'vacancy-create.html')
 
 
+@method_decorator(login_required, 'dispatch')
 class MyCompanyVacancyEdit(View):
     def get(self, request, pk):
-        vacancy = Vacancy.objects.filter(id=pk).first()  # TODO: get_or_404
+        vacancy = get_object_or_404(Vacancy, id=pk)
         if vacancy:
             form = VacancyEditForm(instance=vacancy)
             applications = Application.objects.filter(vacancy=vacancy)
@@ -151,18 +164,17 @@ class MyCompanyVacancyEdit(View):
             return render(request, 'vacancy-edit.html', context=context)
 
     def post(self, request, pk):
-        vacancy = Vacancy.objects.filter(id=pk).first()  # TODO: get_or_404
+        vacancy = get_object_or_404(Vacancy, id=pk)
         form = VacancyEditForm(request.POST, instance=vacancy)
         if form.is_valid():
-            application = form.save(commit=False)
-            application.save()
+            form.save()
 
             context = {
                 'form': form,
                 'is_updated': True,
             }
-            return render(request, 'vacancy-edit.html', context=context)  # TODO: is updated попрбовать через messages
-        return render(request, 'vacancy-editpython.html', context={'form': form})
+            return render(request, 'vacancy-edit.html', context=context)
+        return render(request, 'vacancy-edit.html', context={'form': form})
 
 
 class MyLoginView(LoginView):
@@ -173,7 +185,7 @@ class MyLoginView(LoginView):
 
 class RegisterView(CreateView):
     form_class = RegisterForm
-    success_url = '/'
+    success_url = '/login'
     template_name = 'register.html'
 
 

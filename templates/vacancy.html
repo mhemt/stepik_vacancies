@@ -19,9 +19,9 @@
             <p class="m-0 pl-3">{{ vacancy.salary_min }} – {{ vacancy.salary_max }} ₽</p>
           </div>
           <p class="mt-2">
-            {{ vacancy.specialty.title }} •
+            {{ vacancy.specialty.title }}
             {% for skill in vacancy.skills.all %}
-              {{ skill.name }} •
+              • {{ skill.name }}
             {% endfor %}
           </p>
           <p class="text-muted mb-4">{{ vacancy.company.name|title }} ({{ vacancy.company.employee_count|pluralize_ru:"человек, человека, человек" }}), {{ vacancy.company.location }} или удаленно</p>
@@ -33,6 +33,7 @@
               <p class="h5 mt-3 font-weight-normal">Отозваться на вакансию</p>
 
               {% crispy form %}
+
             </div>
           </div>
         </section>

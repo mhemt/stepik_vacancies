@@ -52,7 +52,6 @@ class LoginForm(AuthenticationForm):
 class ApplicationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.request = kwargs  # TODO: check if necessary
         self.fields['written_username'].label = 'Вас зовут'
         self.fields['written_phone'].label = 'Ваш телефон'
         self.fields['written_cover_letter'].label = 'Сопроводительное письмо'

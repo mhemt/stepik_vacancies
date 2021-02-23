@@ -13,6 +13,7 @@
           <div class="card-body px-4 pb-4">
             <section class="tab-pane fade show active">
               <h2 class="h4 pt-2 pb-3">Вакансии</h2>
+
               {% for vacancy in vacancies %}
               <div class="card mt-3">
                 <div class="card-body px-4">
@@ -20,8 +21,8 @@
                     <div class="col-6 col-lg-8">
                       <a href="{% url 'my_company_vacancy_edit' vacancy.id %}" class="mb-1">{{ vacancy.title }}</a>
                       <p class="mb-1">
-                        <span class="mr-4">От {{ vacancy.salary_min }}</span>
-                        <a href="{% url 'my_company_vacancy_edit' vacancy.id %}#applications" class="text-info">{{ vacancy.applications.count|pluralize_ru:"отклик, отклика, откликов" }}</a>
+                        <span class="mr-4">От {{ vacancy.salary_min }} до {{ vacancy.salary_max }} ₽</span>
+                        <a href="{% url 'my_company_vacancy_edit' vacancy.id %}#applications" class="text-info">{{ vacancy.applications.all|length|pluralize_ru:"отклик, отклика, откликов" }}</a>
                       </p>
                     </div>
                     <div class="col-6 col-lg-4 text-right">
@@ -31,8 +32,8 @@
                 </div>
               </div>
               {% endfor %}
-              <a href="{% url 'my_company_vacancy_create' %}" class="btn btn-info my-2">Добавить вакансию</a>
 
+              <a href="{% url 'my_company_vacancy_create' %}" class="btn btn-info my-3">Добавить вакансию</a>
             </section>
           </div>
         </div>

@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth.views import LogoutView
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 from vacancies.views import MainView, VacanciesView, VacancyView, CompanyView, ApplicationSentView, \
     MyCompanyView, MyCompanyVacancyCreateView, MyCompanyVacancyEdit, MyLoginView, RegisterView, \
@@ -27,7 +27,11 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
+    import debug_toolbar
+
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += [path('__debug__/', include(debug_toolbar.urls))]
+
 
 handler404 = custom_handler404
 handler500 = custom_handler500

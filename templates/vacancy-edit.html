@@ -21,7 +21,7 @@
 
               {% crispy form %}
 
-              <h2 id="applications" class="h4 pt-2 pb-3">Отклики - {{ applications.count }}</h2>
+              <h2 id="applications" class="h4 pt-2 pb-3">Отклики – {% if applications %} {{ applications|length }} {% else %} 0 {% endif %}</h2>
 
               {% for application in applications %}
                 <div class="card mt-3">
