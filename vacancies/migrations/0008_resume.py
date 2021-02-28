@@ -19,14 +19,39 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(blank=True, default='', max_length=100)),
                 ('surname', models.CharField(blank=True, default='', max_length=100)),
-                ('status', models.CharField(choices=[('not_looking', 'Не ищу работу'), ('taking_offers', 'Рассматриваю предложения'), ('looking', 'Ищу работу')], max_length=20)),
+                ('status', models.CharField(
+                    choices=[
+                        ('not_looking', 'Не ищу работу'),
+                        ('taking_offers', 'Рассматриваю предложения'),
+                        ('looking', 'Ищу работу'),
+                    ],
+                    max_length=20),
+                 ),
                 ('salary', models.IntegerField(default=0)),
-                ('grade', models.CharField(choices=[('intern', 'Стажер'), ('junior', 'Джуниор'), ('middle', 'Миддл'), ('senior', 'Синьор'), ('lead', 'Лид')], max_length=10)),
+                ('grade', models.CharField(
+                    choices=[
+                        ('intern', 'Стажер'),
+                        ('junior', 'Джуниор'),
+                        ('middle', 'Миддл'),
+                        ('senior', 'Синьор'),
+                        ('lead', 'Лид'),
+                    ],
+                    max_length=10),
+                 ),
                 ('education', models.CharField(blank=True, default='', max_length=300)),
                 ('experience', models.CharField(blank=True, default='', max_length=1000)),
                 ('portfolio', models.CharField(blank=True, default='', max_length=1000)),
-                ('specialty', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='resumes', to='vacancies.specialty')),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='resume', to=settings.AUTH_USER_MODEL)),
+                ('specialty', models.ForeignKey(
+                    blank=True, null=True,
+                    on_delete=django.db.models.deletion.SET_NULL,
+                    related_name='resumes',
+                    to='vacancies.specialty'),
+                 ),
+                ('user', models.OneToOneField(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='resume',
+                    to=settings.AUTH_USER_MODEL),
+                 ),
             ],
         ),
     ]

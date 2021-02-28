@@ -34,6 +34,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='vacancy',
             name='specialty',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='vacancies', to='vacancies.specialty'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='vacancies',
+                to='vacancies.specialty',
+            ),
         ),
     ]

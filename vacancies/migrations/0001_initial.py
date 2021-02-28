@@ -24,7 +24,12 @@ class Migration(migrations.Migration):
                 ('logo', models.ImageField(upload_to='company_images')),
                 ('description', models.TextField()),
                 ('employee_count', models.IntegerField()),
-                ('owner', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='company', to=settings.AUTH_USER_MODEL)),
+                ('owner', models.ForeignKey(
+                    null=True,
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='company',
+                    to=settings.AUTH_USER_MODEL),
+                 ),
             ],
         ),
         migrations.CreateModel(
@@ -52,9 +57,17 @@ class Migration(migrations.Migration):
                 ('salary_min', models.IntegerField(null=True)),
                 ('salary_max', models.IntegerField(null=True)),
                 ('published_at', models.DateField(default=datetime.date.today)),
-                ('company', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='vacancies', to='vacancies.company')),
+                ('company', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='vacancies',
+                    to='vacancies.company')),
                 ('skills', models.ManyToManyField(related_name='vacancies', to='vacancies.Skill')),
-                ('specialty', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='vacancies', to='vacancies.specialty')),
+                ('specialty', models.ForeignKey(
+                    null=True,
+                    on_delete=django.db.models.deletion.SET_NULL,
+                    related_name='vacancies',
+                    to='vacancies.specialty'),
+                 ),
             ],
         ),
         migrations.CreateModel(
@@ -64,8 +77,16 @@ class Migration(migrations.Migration):
                 ('written_username', models.CharField(max_length=100)),
                 ('written_phone', models.CharField(max_length=20)),
                 ('written_cover_letter', models.TextField()),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='applications', to=settings.AUTH_USER_MODEL)),
-                ('vacancy', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='applications', to='vacancies.vacancy')),
+                ('user', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='applications',
+                    to=settings.AUTH_USER_MODEL),
+                 ),
+                ('vacancy', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='applications',
+                    to='vacancies.vacancy'),
+                 ),
             ],
         ),
     ]

@@ -201,8 +201,8 @@ class SearchView(View):
         query = self.request.GET.get('s').strip()
         vacancies = (
             Vacancy.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))
-                .prefetch_related('skills')
-                .select_related('company', 'specialty')
+                           .prefetch_related('skills')
+                           .select_related('company', 'specialty')
         )
 
         context = {
