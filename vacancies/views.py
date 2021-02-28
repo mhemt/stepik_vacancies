@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.db.models import Count, Q
 from django.http import HttpResponseNotFound, HttpResponseServerError
@@ -82,8 +83,7 @@ class ApplicationSentView(View):
         return render(request, 'sent.html')
 
 
-@method_decorator(login_required, 'dispatch')
-class MyCompanyCreateView(View):
+class MyCompanyCreateView(LoginRequiredMixin, View):
     def get(self, request):
         Company.objects.create(
             owner=request.user,
@@ -91,8 +91,7 @@ class MyCompanyCreateView(View):
         return redirect('my_company')
 
 
-@method_decorator(login_required, 'dispatch')
-class MyCompanyView(View):
+class MyCompanyView(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
         user_company = Company.objects.filter(owner=user).first()
@@ -117,8 +116,7 @@ class MyCompanyView(View):
         return render(request, 'company-edit.html', context={'form': form})
 
 
-@method_decorator(login_required, 'dispatch')
-class MyCompanyVacancyCreateView(View):
+class MyCompanyVacancyCreateView(LoginRequiredMixin, View):
     def get(self, request):
         vacancy = Vacancy.objects.create(
             company=request.user.company,
@@ -126,8 +124,7 @@ class MyCompanyVacancyCreateView(View):
         return redirect('my_company_vacancy_edit', vacancy.id)
 
 
-@method_decorator(login_required, 'dispatch')
-class MyCompanyVacanciesView(View):
+class MyCompanyVacanciesView(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
         user_company = get_object_or_404(Company, owner=user)
@@ -138,8 +135,7 @@ class MyCompanyVacanciesView(View):
             return render(request, 'vacancy-create.html')
 
 
-@method_decorator(login_required, 'dispatch')
-class MyCompanyVacancyEdit(View):
+class MyCompanyVacancyEdit(LoginRequiredMixin, View):
     def get(self, request, pk):
         user = request.user
         vacancy = get_object_or_404(Vacancy, id=pk, company__owner__id=user.id)
@@ -167,8 +163,7 @@ class MyCompanyVacancyEdit(View):
         return render(request, 'vacancy-edit.html', context={'form': form})
 
 
-@method_decorator(login_required, 'dispatch')
-class MyResumeCreateView(View):
+class MyResumeCreateView(LoginRequiredMixin, View):
     def get(self, request):
         Resume.objects.create(
             owner=request.user,
@@ -176,8 +171,7 @@ class MyResumeCreateView(View):
         return redirect('my_resume')
 
 
-@method_decorator(login_required, 'dispatch')
-class MyResumeView(View):
+class MyResumeView(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
         user_resume = Resume.objects.filter(owner=user).select_related('specialty').first()
@@ -205,9 +199,11 @@ class MyResumeView(View):
 class SearchView(View):
     def get(self, request):
         query = self.request.GET.get('s').strip()
-        vacancies = Vacancy.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))\
-            .prefetch_related('skills')\
-            .select_related('company', 'specialty')
+        vacancies = (
+            Vacancy.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))
+                .prefetch_related('skills')
+                .select_related('company', 'specialty')
+        )
 
         context = {
             'vacancies': vacancies,
