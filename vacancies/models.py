@@ -7,7 +7,7 @@ from stepik_vacancies.settings import MEDIA_COMPANY_IMAGE_DIR, MEDIA_SPECIALTY_I
 
 class Company(models.Model):
     name = models.CharField(max_length=100)
-    owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, related_name="company")
+    owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, related_name='company')
     location = models.CharField(max_length=30)
     logo = models.ImageField(upload_to=MEDIA_COMPANY_IMAGE_DIR, default='company_images/130x80.gif')
     description = models.TextField(default='', blank=True)
@@ -72,7 +72,7 @@ class Resume(models.Model):
         ('lead', 'Лид'),
     ]
 
-    owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, related_name="resume")
+    owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, related_name='resume')
     name = models.CharField(max_length=100)
     surname = models.CharField(max_length=100)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
