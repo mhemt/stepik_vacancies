@@ -15,7 +15,6 @@ class RegisterForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         del self.fields['password2']
-        self.fields['username'].label = 'Логин'
         self.fields['username'].help_text = None
         self.fields['password1'].help_text = None
 
@@ -34,13 +33,14 @@ class RegisterForm(UserCreationForm):
             'last_name',
         )
 
+        labels = {
+            'username': 'Логин',
+        }
+
 
 class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['username'].label = 'Логин'
-        self.fields['password'].label = 'Пароль'
-
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.add_input(Submit('submit', 'Войти', css_class='btn-primary btn-lg btn-block'))
@@ -48,14 +48,16 @@ class LoginForm(AuthenticationForm):
         self.helper.form_class = 'form-signin pt-5'
         self.helper.label_class = 'text-muted form-label-group'
 
+    class Meta:
+        labels = {
+            'username': 'Логин',
+            'password': 'Пароль',
+        }
+
 
 class ApplicationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['written_username'].label = 'Вас зовут'
-        self.fields['written_phone'].label = 'Ваш телефон'
-        self.fields['written_cover_letter'].label = 'Сопроводительное письмо'
-
         self.fields['written_cover_letter'].widget.attrs['rows'] = 5
 
         self.helper = FormHelper()
@@ -72,16 +74,16 @@ class ApplicationForm(forms.ModelForm):
             'written_cover_letter',
         )
 
+        labels = {
+            'written_username': 'Вас зовут',
+            'written_phone': 'Ваш телефон',
+            'written_cover_letter': 'Сопроводительное письмо',
+        }
+
 
 class CompanyEditForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['name'].label = 'Название компании'
-        self.fields['location'].label = 'География'
-        self.fields['logo'].label = 'Логотип'
-        self.fields['description'].label = 'Информация о компании'
-        self.fields['employee_count'].label = 'Количество человек в компании'
-
         self.fields['description'].widget.attrs['rows'] = 4
 
         self.helper = FormHelper()
@@ -112,17 +114,18 @@ class CompanyEditForm(forms.ModelForm):
             'employee_count',
         )
 
+        labels = {
+            'name': 'Название компании',
+            'location': 'География',
+            'logo': 'Логотип',
+            'description': 'Информация о компании',
+            'employee_count': 'Количество человек в компании',
+        }
+
 
 class VacancyEditForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['title'].label = 'Название вакансии'
-        self.fields['specialty'].label = 'Специализация'
-        self.fields['skills'].label = 'Требуемые навыки'
-        self.fields['description'].label = 'Описание вакансии'
-        self.fields['salary_min'].label = 'Зарплата от'
-        self.fields['salary_max'].label = 'Зарплата до'
-
         self.fields['description'].widget.attrs['rows'] = 4
 
         self.helper = FormHelper()
@@ -155,20 +158,19 @@ class VacancyEditForm(forms.ModelForm):
             'salary_max',
         )
 
+        labels = {
+            'title': 'Название вакансии',
+            'specialty': 'Специализация',
+            'skills': 'Требуемые навыки',
+            'description': 'Описание вакансии',
+            'salary_min': 'Зарплата от',
+            'salary_max': 'Зарплата до',
+        }
+
 
 class ResumeEditForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['name'].label = 'Имя'
-        self.fields['surname'].label = 'Фамилия'
-        self.fields['status'].label = 'Готовность к работе'
-        self.fields['salary'].label = 'Ожидаемое вознаграждение'
-        self.fields['specialty'].label = 'Специализация'
-        self.fields['grade'].label = 'Квалификация'
-        self.fields['education'].label = 'Образование'
-        self.fields['experience'].label = 'Опыт работы'
-        self.fields['portfolio'].label = 'Ссылка на портфолио'
-
         self.fields['education'].widget.attrs['rows'] = 4
         self.fields['experience'].widget.attrs['rows'] = 4
 
@@ -210,3 +212,15 @@ class ResumeEditForm(forms.ModelForm):
             'experience',
             'portfolio',
         )
+
+        labels = {
+            'name': 'Имя',
+            'surname': 'Фамилия',
+            'status': 'Готовность к работе',
+            'salary': 'Ожидаемое вознаграждение',
+            'specialty': 'Специализация',
+            'grade': 'Квалификация',
+            'education': 'Образование',
+            'experience': 'Опыт работы',
+            'portfolio': 'Ссылка на портфолио',
+        }
